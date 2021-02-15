@@ -17,11 +17,9 @@
 # This code is licensed under a
 # Creative Commons Attribution-ShareAlike 3.0 Unported License.
 # http://creativecommons.org/licenses/by-sa/3.0/
-import time
-
 import numpy as np
+from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
-import scipy
 
 
 # Setting the random seed, so the same example can be run several times
@@ -113,8 +111,7 @@ first_run = True
 w = (1 / N) * np.ones((N, 1))
 
 T = 60
-for t in range(T):
-    # Generate height measurements (with gaussian measurement noise)
+def update(frame_number):
     plane_meas_dist = plane_pos_y - ground(plane_pos_x) + randn() * measurement_noise_stdev
 
     # Evaluate measurements (i.e., create weights) using the pdf for the normal distribution
@@ -171,14 +168,13 @@ for t in range(T):
     particles = particles[ind.flatten()]
     w = np.ones((N, 1)) / N
 
-    del particle_handle
+    # del particle_handle
     particle_handle = ax.scatter(
         particles,
         plot_height*np.ones(particles.size),
         m*(w+k),
         'k'
     )
-    time.sleep(1)
 
     # Time propagation
     speed_noise = speed_stdev * np.random.rand(particles.size)
@@ -190,8 +186,8 @@ for t in range(T):
 
     # Move and plot moved aircraft
     plane_pos_x += speed
-    del plane
-    del measurement_line
+    # del plane
+    # del measurement_line
     plane = plot_plane((plane_pos_x, plane_pos_y), ax)
     measurement_line = plt.plot(
         [plane_pos_x, plane_pos_x], [ground(plane_pos_x), plane_pos_y],
@@ -204,3 +200,11 @@ for t in range(T):
     #     particle_handle = ax.scatter(particles, plot_height*np.ones(particles.size), m*(1/N*np.ones(N)+k), 'k')
 
     first_run = False
+    # Generate height measurements (with gaussian measurement noise)
+
+
+
+
+
+animation = FuncAnimation(fig, update, interval=T)
+plt.show()
